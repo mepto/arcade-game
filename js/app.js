@@ -42,20 +42,14 @@ var Player = function () {
   this.y = 390;
   this.score = 0;
   this.sprite = 'images/char-pink-girl.png';
-  this.resetPlayer = function() {
-    setTimeout(function () {
-      this.score += 1;
-      this.x = 404;
-      this.y = 390;
-    }, 2000);
+  this.resetPlayer = function () {
+    player.x = 404;
+    player.y = 390;
   }
 };
 
 Player.prototype.update = function (dt) {
-  //      console.log(this.score);
-  if (this.y === -25) {
-    this.resetPlayer();
-  }
+
 };
 
 Player.prototype.render = function () {
@@ -85,15 +79,46 @@ Player.prototype.handleInput = function (key) {
     }
     break;
   };
-  //  console.log("x: " +   player.x + " - y: " + player.y);
+  if (this.y === -25) {
+    setTimeout(this.resetPlayer, 500);
+    scoreBoard.incrementScore();
+    console.log(scoreBoard.currentScore);
+  }
 };
+
+var ScoreBoard = function () {
+  this.starScore = 0;
+  this.currentScoreLabel = 'Score: ';
+  this.currentScoreLabelX = 10;
+  this.currentScore = 0;
+  this.bestScoreLabel = "Best score: "
+  this.bestScore = 0;
+  this.incrementScore = function () {
+    this.currentScore = this.currentScore + 1;
+  }
+};
+
+ScoreBoard.prototype.update = function (dt) {
+  ctx.fillStyle = "#ACE1F2";
+  ctx.fillRect(-10, -10, 920, 850);
+  this.render();
+};
+
+ScoreBoard.prototype.render = function () {
+  ctx.font = "20px Arial";
+  ctx.fillStyle = "#033644";
+  ctx.fillText(this.currentScoreLabel, this.currentScoreLabelX, 25);
+  ctx.font = "bold 20px Arial";
+  ctx.fillText(this.currentScore, 90, 25);
+};
+
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy()];
 var player = new Player();
-
+var scoreBoard = new ScoreBoard();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -104,6 +129,5 @@ document.addEventListener('keyup', function (e) {
     39: 'right',
     40: 'down'
   };
-  //  console.log(allowedKeys[e.keyCode]);
   player.handleInput(allowedKeys[e.keyCode]);
 });
