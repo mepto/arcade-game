@@ -166,10 +166,10 @@ StartScreen.prototype.update = function (dt) {
   if (endGame) {
     this.isOn = true;
     screenText = 'GAME OVER!!';
-    pressText = 'Start again?';
+    pressText =  '  Start again?';
   } else if (isPaused) {
-    screenText = 'GAME PAUSED';
-    pressText = 'Press P to resume';
+    screenText = ' GAME PAUSED';
+    pressText = 'Resume: P/Space';
     this.isOn = true;
   } else if (!hasStarted) {
     this.isOn = true;
@@ -278,7 +278,7 @@ ScoreBoard.prototype.render = function () {
 var scoreBoard = new ScoreBoard();
 var startScreen = new StartScreen();
 var allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy()];
-var allRocks = [new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock()];
+var allRocks = [new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock()];
 var player = new Player();
 
 
