@@ -1,3 +1,22 @@
 body {
-    text-align: center;
+/*    text-align: center;*/
+/*  background-image: url("http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/brickwall.png");*/
+/*  background-image: url("http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/dark_wall.png");*/
+  background-image: url("http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/food.png");
+}
+
+#game {
+  background: #d32aae;
+  border: 6px solid #d32aae;
+  box-shadow: 0px 0px 10px 7px rgba(211, 42, 174, 0.4);
+  height: 586px;
+  margin: 0 auto;
+  width: 909px;
+}
+
+h1 {
+  color: #d32aae;
+  font: bold 40px 'Pacifico';
+  text-align: center;
+  text-shadow: -15px 10px 15px  rgba(211, 42, 174, 0.6);
 }

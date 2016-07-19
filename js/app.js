@@ -10,16 +10,16 @@ var Enemy = function () {
   // we've provided one for you to get started
   this.y = ((Math.floor(Math.random() * 3) + 1) * 83) - 25;
   this.x = -100;
-  this.bugWidth = 75;
-  this.bugHeight = 75;
-  this.speed = (Math.floor(Math.random() * (100 - 90) + 10) * 15);
+  this.width = 75;
+  this.height = 75;
+  this.speed = (Math.floor(Math.random() * (100 - 90) + 10) * 40);
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
   this.sprite = 'images/enemy-bug.png';
   this.resetBug = function () {
     this.y = ((Math.floor(Math.random() * 3) + 1) * 83) - 25;
     this.x = -100;
-    this.speed = (Math.floor(Math.random() * (100 - 90) + 10) * 15); //40
+    this.speed = (Math.floor(Math.random() * (100 - 90) + 10) * 40); //40
   };
 };
 
@@ -56,7 +56,7 @@ var Player = function () { //function (selection) {
       if (player.lives === 0) {
         endGame = true;
       }
-    } else if (param === 'restartGame'){
+    } else if (param === 'restartGame') {
       player.lives = 3;
       scoreBoard.reset();
       endGame = false;
@@ -67,7 +67,7 @@ var Player = function () { //function (selection) {
 };
 
 Player.prototype.update = function (dt) {
-  checkCollision();
+  checkCollision('bugs');
 };
 
 Player.prototype.render = function () {
@@ -80,21 +80,33 @@ Player.prototype.handleInput = function (key) {
   case 'up':
     if (this.y > 0) {
       this.y -= 83;
+      if (checkCollision('rocks')) {
+        this.y += 83;
+      }
     }
     break;
   case 'down':
     if (this.y < 390) {
       this.y += 83;
+      if (checkCollision('rocks')) {
+        this.y -= 83;
+      }
     }
     break;
   case 'left':
     if (this.x > 0) {
       this.x -= 101;
+      if (checkCollision('rocks')) {
+        this.x += 101;
+      }
     }
     break;
   case 'right':
     if (this.x < 808) {
       this.x += 101;
+      if (checkCollision('rocks')) {
+        this.x -= 101;
+      }
     }
     break;
   case 'pause':
@@ -109,6 +121,24 @@ Player.prototype.handleInput = function (key) {
   }
 };
 
+//The rock class will randomly draw rocks on the field
+var Rock = function () {
+  this.x = ((Math.floor(Math.random() * 9)) * 101);
+  this.y = ((Math.floor(Math.random() * 4)+1) * 83) - 30;
+  this.height = 75;
+  this.width = 75;
+  this.sprite = 'images/Rock.png';
+};
+
+Rock.prototype.update = function (dt) {
+
+};
+
+Rock.prototype.render = function () {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+//The startscreen is a text that invite to start, restart if the player paused or died
 var StartScreen = function () {
   this.isOn = true;
 };
@@ -118,40 +148,33 @@ StartScreen.prototype.handleInput = function (key) {
   case 'pause':
   case 'spaceBar':
   case 'yes':
-//    console.log('handleinput before -- hasstarted: ' + hasStarted + ' -- ispaused: ' + isPaused + ' -- endgame: ' + endGame + ' -- this.ison: ' + this.isOn);
     this.isOn = false;
     isPaused = false;
     hasStarted = true;
     if (endGame) {
       player.resetPlayer('restartGame');
     }
-//    console.log('handleinput after -- hasstarted: ' + hasStarted + ' -- ispaused: ' + isPaused + ' -- endgame: ' + endGame + ' -- this.ison: ' + this.isOn);
     break;
   case 'no':
     this.isOn = true;
     isPaused = true;
-
     break;
   };
 }
 
-
 StartScreen.prototype.update = function (dt) {
   if (endGame) {
     this.isOn = true;
-    screenText = ' GAME OVER!';
+    screenText = 'GAME OVER!!';
     pressText = 'Start again?';
-    //    this.render();
   } else if (isPaused) {
     screenText = 'GAME PAUSED';
-    pressText = 'Space to resume';
+    pressText = 'Press P to resume';
     this.isOn = true;
-    //    this.render;
   } else if (!hasStarted) {
     this.isOn = true;
     screenText = 'START GAME?';
     pressText = 'Press Y to start';
-    //    this.render();
   }
 }
 
@@ -168,22 +191,46 @@ StartScreen.prototype.render = function () {
 }
 
 
-var checkCollision = function () {
-  for (var i = 0; i < allEnemies.length; i++) {
-    var bugTop = allEnemies[i].y;
-    var bugBottom = allEnemies[i].y + allEnemies[i].bugHeight;
-    var bugLeft = allEnemies[i].x;
-    var bugRight = allEnemies[i].x + allEnemies[i].bugWidth;
-    var playerTop = player.y;
-    var playerBottom = player.y + player.height;
-    var playerLeft = player.x;
-    var playerRight = player.x + player.width;
-    if (bugRight >= playerLeft && bugRight <= playerRight && bugBottom >= playerTop && bugBottom <= playerBottom) {
-      player.resetPlayer('collision');
+var checkCollision = function (type) {
+  switch (type) {
+  case 'bugs':
+    for (var i = 0; i < allEnemies.length; i++) {
+      var bugTop = allEnemies[i].y;
+      var bugBottom = allEnemies[i].y + allEnemies[i].height;
+      var bugLeft = allEnemies[i].x;
+      var bugRight = allEnemies[i].x + allEnemies[i].width;
+      var playerTop = player.y;
+      var playerBottom = player.y + player.height;
+      var playerLeft = player.x;
+      var playerRight = player.x + player.width;
+      if (bugRight >= playerLeft && bugRight <= playerRight && bugBottom >= playerTop && bugBottom <= playerBottom) {
+        player.resetPlayer('collision');
+      }
     }
+    break;
+  case 'rocks':
+    for (var i = 0; i < allRocks.length; i++) {
+      console.log(allRocks[i]);
+      var rockTop = allRocks[i].y;
+      var rockBottom = allRocks[i].y + allRocks[i].height;
+      var rockLeft = allRocks[i].x;
+      var rockRight = allRocks[i].x + allRocks[i].width;
+      var playerTop = player.y;
+      var playerBottom = player.y + player.height;
+      var playerLeft = player.x;
+      var playerRight = player.x + player.width;
+      if (rockRight >= playerLeft && rockRight <= playerRight && rockBottom >= playerTop && rockBottom <= playerBottom) {
+        return true;
+      } // don't put a "else return false" otherwise the loop stops on i > 0
+    }
+    break;
+  default:
+    break;
   }
 };
 
+
+//The scoreboard writes the nb of lives left, the current score and the best score since page load
 var ScoreBoard = function () {
   this.starScore = 0;
   this.currentScoreLabel = 'Score: ';
@@ -195,7 +242,7 @@ var ScoreBoard = function () {
   this.incrementScore = function () {
     this.currentScore = this.currentScore + 15;
   }
-  this.reset = function() {
+  this.reset = function () {
     if (this.currentScore > this.bestScore) {
       this.bestScore = this.currentScore;
     }
@@ -228,23 +275,19 @@ ScoreBoard.prototype.render = function () {
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-//var allEnemies = [];
-//var player = [];
 var scoreBoard = new ScoreBoard();
 var startScreen = new StartScreen();
-//var startGame = function () {
 var allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy()];
+var allRocks = [new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock(), new Rock()];
 var player = new Player();
 
-
-//};
 
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function (e) {
+  //checks if starscreen is on or not and returns allowed keys accordingly
   if (!startScreen.isOn) {
-    //    console.log('startscreen off - keycode: ' + e.keyCode + ' - ispaused: ' + isPaused + ' - end: ' + endGame + ' - hasStarted: ' + hasStarted);
     var allowedKeys = {
       37: 'left',
       38: 'up',
@@ -252,17 +295,14 @@ document.addEventListener('keyup', function (e) {
       40: 'down',
       80: 'pause' // pause game
     };
-    //    console.log(allowedKeys[e.keyCode]);
     player.handleInput(allowedKeys[e.keyCode]);
   } else if (startScreen.isOn) {
-    //    console.log('startscreen on - keycode: ' + e.keyCode + ' - ispaused: ' + isPaused + ' - end: ' + endGame + ' - hasStarted: ' + hasStarted);
     var allowedKeys = {
-      80: 'pause',
+      80: 'pause', //resume
       89: 'yes', // yes start
       32: 'spaceBar', //yes start / resume
       78: 'no'
     };
-    //    console.log(allowedKeys[e.keyCode]);
     startScreen.handleInput(allowedKeys[e.keyCode]);
   }
 });

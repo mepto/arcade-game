@@ -19,16 +19,18 @@ var Engine = (function (global) {
    * create the canvas element, grab the 2D context for that canvas
    * set the canvas elements height/width and add it to the DOM.
    */
-  var doc = global.document,
-    win = global.window,
-    canvas = doc.createElement('canvas'),
+//  var doc = global.document,
+    var win = global.window,
+//    canvas = doc.createElement('canvas'),
+    canvas = document.createElement('canvas'),
     ctx = canvas.getContext('2d'),
     lastTime;
 
   canvas.width = 909;
   canvas.height = 586;
 
-  doc.body.appendChild(canvas);
+  document.getElementById('game').appendChild(canvas);
+//  doc.body.appendChild(canvas);
 
   /* This function serves as the kickoff point for the game loop itself
    * and handles properly calling the update and render methods.
@@ -59,14 +61,6 @@ var Engine = (function (global) {
      */
     win.requestAnimationFrame(main);
   }
-  //    function startGame() {
-  //
-  //
-  //
-  //
-  //        win.requestAnimationFrame(startGame);
-  //    }
-
 
   /* This function does some initial setup that should only occur once,
    * particularly setting the lastTime variable that is required for the
@@ -106,6 +100,9 @@ var Engine = (function (global) {
 
       allEnemies.forEach(function (enemy) {
         enemy.update(dt);
+      });
+      allRocks.forEach(function (rock) {
+        rock.update(dt);
       });
       player.update();
 
@@ -165,6 +162,10 @@ var Engine = (function (global) {
     /* Loop through all of the objects within the allEnemies array and call
      * the render function you have defined.
      */
+
+    allRocks.forEach(function (rock) {
+      rock.render();
+    });
     allEnemies.forEach(function (enemy) {
       enemy.render();
     });
@@ -192,7 +193,7 @@ var Engine = (function (global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png',
+        'images/Rock.png',
         'images/char-pink-girl.png',
         'images/heart_thumb.png'
     ]);
