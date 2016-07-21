@@ -1,3 +1,9 @@
+// TODO: create a parent constructor for animated objects
+// to keep it DRY (Don't repeat yourself)
+
+'use strict';
+
+// global variables
 var endGame = false;
 var isPaused = false;
 var hasStarted = false;
@@ -69,12 +75,12 @@ var Player = function () {
   // a bug (a life is lost until no lives are left)
   this.resetPlayer = function (param) {
     if (param === 'collision') {
-      player.lives -= 1;
-      if (player.lives === 0) {
+      this.lives -= 1;
+      if (this.lives === 0) {
         endGame = true;
       }
     } else if (param === 'restartGame') {
-      player.lives = 3;
+      this.lives = 3;
       scoreBoard.reset();
       endGame = false;
       allRocks.forEach(function (rock) {
@@ -83,13 +89,13 @@ var Player = function () {
     } else {
       scoreBoard.incrementScore();
     }
-    player.x = 404;
-    player.y = 390;
+    this.x = 404;
+    this.y = 390;
   }
 };
 
 Player.prototype.update = function (dt) {
-  checkCollision('bugs');
+  this.checkCollision('bugs');
 };
 
 Player.prototype.render = function () {
@@ -105,7 +111,7 @@ Player.prototype.handleInput = function (key) {
   case 'up':
     if (this.y > 0) {
       this.y -= 83;
-      if (checkCollision('rocks')) {
+      if (this.checkCollision('rocks')) {
         this.y += 83;
       }
     }
@@ -113,7 +119,7 @@ Player.prototype.handleInput = function (key) {
   case 'down':
     if (this.y < 390) {
       this.y += 83;
-      if (checkCollision('rocks')) {
+      if (this.checkCollision('rocks')) {
         this.y -= 83;
       }
     }
@@ -121,7 +127,7 @@ Player.prototype.handleInput = function (key) {
   case 'left':
     if (this.x > 0) {
       this.x -= 101;
-      if (checkCollision('rocks')) {
+      if (this.checkCollision('rocks')) {
         this.x += 101;
       }
     }
@@ -129,7 +135,7 @@ Player.prototype.handleInput = function (key) {
   case 'right':
     if (this.x < 808) {
       this.x += 101;
-      if (checkCollision('rocks')) {
+      if (this.checkCollision('rocks')) {
         this.x -= 101;
       }
     }
@@ -142,8 +148,52 @@ Player.prototype.handleInput = function (key) {
     // delays the player reset to
     //actually see the player reach the water
     setTimeout(function () {
-      player.resetPlayer();
-    }, 200);
+      this.resetPlayer();
+    }.bind(this), 200);
+  }
+};
+
+/**
+* @description: this function checks the collision between the player and the bugs/rocks
+* it could be updated to also manage other types of collission (gems for instance)
+* @param {string} type - type of collision (bug or rock)
+* @returns: resetfunction of player if bug, true if rock
+* TODO: add gems and random lives
+*/
+Player.prototype.checkCollision = function (type) {
+  switch (type) {
+  case 'bugs':
+    for (var i = 0, len = allEnemies.length; i < len; i++) {
+      var bugTop = allEnemies[i].y;
+      var bugBottom = allEnemies[i].y + allEnemies[i].height;
+      var bugLeft = allEnemies[i].x;
+      var bugRight = allEnemies[i].x + allEnemies[i].width;
+      var playerTop = player.y;
+      var playerBottom = player.y + player.height;
+      var playerLeft = player.x;
+      var playerRight = player.x + player.width;
+      if (bugRight >= playerLeft && bugRight <= playerRight && bugBottom >= playerTop && bugBottom <= playerBottom) {
+        player.resetPlayer('collision');
+      }
+    }
+    break;
+  case 'rocks':
+    for (var i = 0, len = allRocks.length; i < len; i++) {
+      var rockTop = allRocks[i].y;
+      var rockBottom = allRocks[i].y + allRocks[i].height;
+      var rockLeft = allRocks[i].x;
+      var rockRight = allRocks[i].x + allRocks[i].width;
+      var playerTop = player.y;
+      var playerBottom = player.y + player.height;
+      var playerLeft = player.x;
+      var playerRight = player.x + player.width;
+      if (rockRight >= playerLeft && rockRight <= playerRight && rockBottom >= playerTop && rockBottom <= playerBottom) {
+        return true;
+      } // don't put a "else return false" otherwise the loop stops on i > 0
+    }
+    break;
+  default:
+    break;
   }
 };
 
@@ -230,51 +280,6 @@ StartScreen.prototype.render = function () {
   ctx.strokeText(screenText, 390, 250);
   ctx.strokeText(pressText, 375, 280)
 }
-
-
-/**
-* @description: this function checks the collision between the player and the bugs/rocks
-* it could be updated to also manage other types of collission (gems for instance)
-* @param {string} type - type of collision (bug or rock)
-* @returns: resetfunction of player if bug, true if rock
-* TODO: add gems and random lives
-*/
-var checkCollision = function (type) {
-  switch (type) {
-  case 'bugs':
-    for (var i = 0; i < allEnemies.length; i++) {
-      var bugTop = allEnemies[i].y;
-      var bugBottom = allEnemies[i].y + allEnemies[i].height;
-      var bugLeft = allEnemies[i].x;
-      var bugRight = allEnemies[i].x + allEnemies[i].width;
-      var playerTop = player.y;
-      var playerBottom = player.y + player.height;
-      var playerLeft = player.x;
-      var playerRight = player.x + player.width;
-      if (bugRight >= playerLeft && bugRight <= playerRight && bugBottom >= playerTop && bugBottom <= playerBottom) {
-        player.resetPlayer('collision');
-      }
-    }
-    break;
-  case 'rocks':
-    for (var i = 0; i < allRocks.length; i++) {
-      var rockTop = allRocks[i].y;
-      var rockBottom = allRocks[i].y + allRocks[i].height;
-      var rockLeft = allRocks[i].x;
-      var rockRight = allRocks[i].x + allRocks[i].width;
-      var playerTop = player.y;
-      var playerBottom = player.y + player.height;
-      var playerLeft = player.x;
-      var playerRight = player.x + player.width;
-      if (rockRight >= playerLeft && rockRight <= playerRight && rockBottom >= playerTop && rockBottom <= playerBottom) {
-        return true;
-      } // don't put a "else return false" otherwise the loop stops on i > 0
-    }
-    break;
-  default:
-    break;
-  }
-};
 
 /**
 * @description: the scoreboard writes the nb of lives left,
