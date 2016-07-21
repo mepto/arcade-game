@@ -93,16 +93,13 @@ var Engine = (function (global) {
    * render methods.
    */
   function updateEntities(dt) {
-
+    // Updates are stopped when game is not started, paused or over
+    // and overlay screen is visible with instructions
     if ((isPaused || !hasStarted || endGame)) {
       startScreen.update();
     } else {
-
       allEnemies.forEach(function (enemy) {
         enemy.update(dt);
-      });
-      allRocks.forEach(function (rock) {
-        rock.update(dt);
       });
       player.update();
 
@@ -159,7 +156,7 @@ var Engine = (function (global) {
    * on your enemy and player entities within app.js
    */
   function renderEntities() {
-    /* Loop through all of the objects within the allEnemies array and call
+    /* Loop through all of the objects within the allEnemies array, the allRocks array and the player and call
      * the render function you have defined.
      */
 
@@ -170,6 +167,8 @@ var Engine = (function (global) {
       enemy.render();
     });
     player.render();
+    scoreBoard.render();
+    //if the game is paused, over or not yet started, the overlay screen is available with instructions
     if (isPaused || endGame || !hasStarted) {
       startScreen.render();
     }
