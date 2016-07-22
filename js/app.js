@@ -183,10 +183,10 @@ Player.prototype.checkCollision = function (type) {
       var rockBottom = allRocks[i].y + allRocks[i].height;
       var rockLeft = allRocks[i].x;
       var rockRight = allRocks[i].x + allRocks[i].width;
-      var playerTop = player.y;
-      var playerBottom = player.y + player.height;
-      var playerLeft = player.x;
-      var playerRight = player.x + player.width;
+      var playerTop = this.y;
+      var playerBottom = this.y + this.height;
+      var playerLeft = this.x;
+      var playerRight = this.x + this.width;
       if (rockRight >= playerLeft && rockRight <= playerRight && rockBottom >= playerTop && rockBottom <= playerBottom) {
         return true;
       } // don't put a "else return false" otherwise the loop stops on i > 0
