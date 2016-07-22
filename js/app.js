@@ -168,12 +168,12 @@ Player.prototype.checkCollision = function (type) {
       var bugBottom = allEnemies[i].y + allEnemies[i].height;
       var bugLeft = allEnemies[i].x;
       var bugRight = allEnemies[i].x + allEnemies[i].width;
-      var playerTop = player.y;
-      var playerBottom = player.y + player.height;
-      var playerLeft = player.x;
-      var playerRight = player.x + player.width;
+      var playerTop = this.y;
+      var playerBottom = this.y + this.height;
+      var playerLeft = this.x;
+      var playerRight = this.x + this.width;
       if (bugRight >= playerLeft && bugRight <= playerRight && bugBottom >= playerTop && bugBottom <= playerBottom) {
-        player.resetPlayer('collision');
+        this.resetPlayer('collision');
       }
     }
     break;
